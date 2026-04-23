@@ -14,7 +14,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/sales-erp?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/trae?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
     username: root
     password: root123
     druid:
@@ -77,22 +77,22 @@ shop:
   external:
     # 拼多多平台配置（云兔中转）
     pinduoduo:
-      base-url: http://ytbj.dongmingwangluo.com
-      client-id: YTLY200E75
-      secret: H9MT5KYU0FZR1QJVE4QMFZWOSKGLYBYR
-      order-url: https://fuwu.pinduoduo.com/service-market/service-detail?detailId=50737
+      base-url: http://xx.xx.com
+      client-id: xx
+      secret: xx
+      order-url: https://xx.x.com/service-market/service-detail?detailId=50737
     # 抖音平台配置（好快中转）
     douyin:
-      base-url: https://lhmgoods.dongmingwangluo.com
-      app-key: YTLY200E75
-      secret: H9MT5KYU0FZR1QJVE4QMFZWOSKGLYBYR
-      order-url: https://fuwu.jinritemai.com/authorize?service_id=32522
+      base-url: https://xx.xx.com
+      app-key: xx
+      secret: xx
+      order-url: https://xx.xx.xx/authorize?service_id=32522
     # 小红书平台配置
     xiaohongshu:
-      base-url: http://xhsgoods.yanchongkeji.com
-      app-key: YTLY200E75
-      secret: H9MT5KYU0FZR1QJVE4QMFZWOSKGLYBYR
-      order-url: http://xhsgoods.yanchongkeji.com/api/auth/subscribe
+      base-url: http://xx.xx.com
+      app-key: xx
+      secret: xx
+      order-url: http://xx.xx.xx/api/auth/subscribe
 
 # 日志配置
 logging:
