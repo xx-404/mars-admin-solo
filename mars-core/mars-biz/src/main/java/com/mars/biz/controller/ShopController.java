@@ -2,7 +2,6 @@ package com.mars.biz.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.util.StrUtil;
 import com.mars.biz.dto.req.ShopQueryReq;
 import com.mars.biz.dto.rsp.AuthUrlRsp;
 import com.mars.biz.dto.rsp.ExternalRsp;
@@ -15,6 +14,8 @@ import com.mars.common.result.PageResult;
 import com.mars.common.result.Result;
 import com.mars.system.annotation.Log;
 import com.mars.system.annotation.Log.BusinessType;
+import com.mars.system.annotation.RateLimit;
+import com.mars.system.annotation.RateLimitStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class ShopController {
      */
     @GetMapping("/page")
     @SaCheckPermission("biz:shop:list")
+    @RateLimit(time = 1, count = 1, strategy = RateLimitStrategy.USER_ID)
     public Result<PageResult<Shop>> page(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer pageSize,
