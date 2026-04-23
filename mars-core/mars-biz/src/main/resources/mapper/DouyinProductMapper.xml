@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mars.biz.mapper.DouyinProductMapper">
+
+    <resultMap id="BaseResultMap" type="com.mars.biz.entity.DouyinProduct">
+        <id column="id" property="id"/>
+        <result column="owner_id" property="ownerId"/>
+        <result column="product_id" property="productId"/>
+        <result column="outer_product_id" property="outerProductId"/>
+        <result column="out_product_id" property="outProductId"/>
+        <result column="product_type" property="productType"/>
+        <result column="category_leaf_id" property="categoryLeafId"/>
+        <result column="name" property="name"/>
+        <result column="pic" property="pic"/>
+        <result column="description" property="description"/>
+        <result column="recommend_remark" property="recommendRemark"/>
+        <result column="pay_type" property="payType"/>
+        <result column="price" property="price"/>
+        <result column="original_price" property="originalPrice"/>
+        <result column="cost_price" property="costPrice"/>
+        <result column="stock_num" property="stockNum"/>
+        <result column="reduce_type" property="reduceType"/>
+        <result column="delivery_method" property="deliveryMethod"/>
+        <result column="freight_id" property="freightId"/>
+        <result column="weight" property="weight"/>
+        <result column="weight_unit" property="weightUnit"/>
+        <result column="delivery_delay_day" property="deliveryDelayDay"/>
+        <result column="presell_type" property="presellType"/>
+        <result column="presell_delay" property="presellDelay"/>
+        <result column="presell_end_time" property="presellEndTime"/>
+        <result column="presell_config_level" property="presellConfigLevel"/>
+        <result column="presell_delivery_type" property="presellDeliveryType"/>
+        <result column="spec_name" property="specName"/>
+        <result column="specs" property="specs"/>
+        <result column="spec_prices" property="specPrices"/>
+        <result column="spec_pic" property="specPic"/>
+        <result column="maximum_per_order" property="maximumPerOrder"/>
+        <result column="minimum_per_order" property="minimumPerOrder"/>
+        <result column="limit_per_buyer" property="limitPerBuyer"/>
+        <result column="product_format_new" property="productFormatNew"/>
+        <result column="spu_id" property="spuId"/>
+        <result column="standard_brand_id" property="standardBrandId"/>
+        <result column="quality_list" property="qualityList"/>
+        <result column="cdf_category" property="cdfCategory"/>
+        <result column="assoc_ids" property="assocIds"/>
+        <result column="mobile" property="mobile"/>
+        <result column="supply_7day_return" property="supply7dayReturn"/>
+        <result column="commit" property="commit"/>
+        <result column="remark" property="remark"/>
+        <result column="need_check_out" property="needCheckOut"/>
+        <result column="need_recharge_mode" property="needRechargeMode"/>
+        <result column="appoint_delivery_day" property="appointDeliveryDay"/>
+        <result column="third_url" property="thirdUrl"/>
+        <result column="extra" property="extra"/>
+        <result column="src" property="src"/>
+        <result column="poi_resource" property="poiResource"/>
+        <result column="car_vin_code" property="carVinCode"/>
+        <result column="white_background_pic_url" property="whiteBackgroundPicUrl"/>
+        <result column="long_pic_url" property="longPicUrl"/>
+        <result column="account_template_id" property="accountTemplateId"/>
+        <result column="status" property="status"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="audit_remark" property="auditRemark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="audit_time" property="auditTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, owner_id, product_id, outer_product_id, out_product_id,
+        product_type, category_leaf_id, name, pic, description, recommend_remark,
+        pay_type, price, original_price, cost_price, stock_num, reduce_type,
+        delivery_method, freight_id, weight, weight_unit, delivery_delay_day,
+        presell_type, presell_delay, presell_end_time, presell_config_level, presell_delivery_type,
+        spec_name, specs, spec_prices, spec_pic,
+        maximum_per_order, minimum_per_order, limit_per_buyer,
+        product_format_new, spu_id, standard_brand_id, quality_list,
+        cdf_category, assoc_ids, mobile, supply_7day_return, commit, remark, need_check_out, need_recharge_mode,
+        appoint_delivery_day, third_url, extra, src, poi_resource, car_vin_code,
+        white_background_pic_url, long_pic_url, account_template_id,
+        status, audit_status, audit_remark, create_time, update_time, publish_time, audit_time
+    </sql>
+
+    <select id="selectProductList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM douyin_product
+        <where>
+            <if test="ownerId != null and ownerId != ''">
+                AND owner_id = #{ownerId}
+            </if>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            AND status != 5
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countProductList" resultType="long">
+        SELECT COUNT(*)
+        FROM douyin_product
+        <where>
+            <if test="ownerId != null and ownerId != ''">
+                AND owner_id = #{ownerId}
+            </if>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            AND status != 5
+        </where>
+    </select>
+
+    <select id="selectByOwnerIdAndProductId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM douyin_product
+        WHERE owner_id = #{ownerId}
+          AND product_id = #{productId}
+        LIMIT 1
+    </select>
+
+</mapper>

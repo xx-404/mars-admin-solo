@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mars.biz.mapper.DouyinFreightTemplateMapper">
+
+    <resultMap id="BaseResultMap" type="com.mars.biz.entity.DouyinFreightTemplate">
+        <id column="id" property="id"/>
+        <result column="owner_id" property="ownerId"/>
+        <result column="freight_id" property="freightId"/>
+        <result column="template_name" property="templateName"/>
+        <result column="product_province" property="productProvince"/>
+        <result column="product_province_name" property="productProvinceName"/>
+        <result column="product_city" property="productCity"/>
+        <result column="product_city_name" property="productCityName"/>
+        <result column="calculate_type" property="calculateType"/>
+        <result column="transfer_type" property="transferType"/>
+        <result column="rule_type" property="ruleType"/>
+        <result column="fixed_amount" property="fixedAmount"/>
+        <result column="columns" property="columns"/>
+        <result column="upsert_transfer_rule" property="upsertTransferRule"/>
+        <result column="status" property="status"/>
+        <result column="sync_status" property="syncStatus"/>
+        <result column="sync_time" property="syncTime"/>
+        <result column="sync_error" property="syncError"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, owner_id, freight_id, template_name, product_province, product_province_name,
+        product_city, product_city_name, calculate_type, transfer_type, rule_type, fixed_amount,
+        columns, upsert_transfer_rule, status, sync_status, sync_time, sync_error, create_time, update_time
+    </sql>
+
+    <select id="selectByOwnerIdAndFreightId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM douyin_freight_template
+        WHERE owner_id = #{ownerId} AND freight_id = #{freightId}
+    </select>
+
+    <select id="selectByOwnerId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM douyin_freight_template
+        WHERE owner_id = #{ownerId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>
