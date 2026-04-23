@@ -2,11 +2,14 @@ package com.mars.biz.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mars.biz.dto.req.ActivationCodeQueryReq;
 import com.mars.biz.dto.rsp.ActivationCodeRsp;
 import com.mars.biz.entity.ActivationCode;
+import com.mars.biz.excel.ActivationCodeExcel;
+import com.mars.biz.excel.ActivationCodeImportListener;
 import com.mars.biz.mapper.ActivationCodeMapper;
 import com.mars.biz.service.ActivationCodeService;
 import com.mars.common.exception.BusinessException;
@@ -14,10 +17,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 激活码 Service 实现
@@ -31,6 +38,7 @@ import java.util.List;
 public class ActivationCodeServiceImpl implements ActivationCodeService {
 
     private final ActivationCodeMapper activationCodeMapper;
+    private final com.mars.biz.config.ActivationCodeImportConfig importConfig;
 
     @Override
     public Page<ActivationCode> page(Integer page, Integer pageSize, ActivationCodeQueryReq req) {
@@ -163,6 +171,69 @@ public class ActivationCodeServiceImpl implements ActivationCodeService {
                 .updateTime(activationCode.getUpdateTime() != null
                         ? activationCode.getUpdateTime().toString() : null)
                 .build();
+    }
+
+    @Override
+    public Map<String, Object> importActivationCodes(MultipartFile file) {
+        try {
+            ActivationCodeImportListener listener = new ActivationCodeImportListener(
+                    activationCodeMapper, importConfig);
+            EasyExcel.read(file.getInputStream(), ActivationCodeExcel.class, listener).sheet().doRead();
+
+            if (listener.isHasFatalError()) {
+                throw new BusinessException(listener.getFatalErrorMessage());
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("totalRows", listener.getTotalRows());
+            result.put("emptyRows", listener.getEmptyRows());
+            result.put("successCount", listener.getSuccessCount());
+            result.put("failCount", listener.getFailCount());
+            result.put("errors", listener.getErrorMessages());
+            result.put("successItems", listener.getSuccessItems());
+            result.put("failItems", listener.getFailItems());
+            return result;
+        } catch (IOException e) {
+            log.error("读取Excel文件失败", e);
+            throw new BusinessException("读取Excel文件失败：" + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<ActivationCodeExcel> getTestExcelData() {
+        List<ActivationCodeExcel> list = new java.util.ArrayList<>();
+
+        ActivationCodeExcel code1 = new ActivationCodeExcel();
+        code1.setActivationCode("TESTCODE00000001");
+        code1.setDurationTypeStr("日");
+        code1.setDurationDays(1);
+        list.add(code1);
+
+        ActivationCodeExcel code2 = new ActivationCodeExcel();
+        code2.setActivationCode("TESTCODE00000002");
+        code2.setDurationTypeStr("月");
+        code2.setDurationDays(30);
+        list.add(code2);
+
+        ActivationCodeExcel code3 = new ActivationCodeExcel();
+        code3.setActivationCode("TESTCODE00000003");
+        code3.setDurationTypeStr("季");
+        code3.setDurationDays(90);
+        list.add(code3);
+
+        ActivationCodeExcel code4 = new ActivationCodeExcel();
+        code4.setActivationCode("TESTCODE00000004");
+        code4.setDurationTypeStr("年");
+        code4.setDurationDays(365);
+        list.add(code4);
+
+        ActivationCodeExcel code5 = new ActivationCodeExcel();
+        code5.setActivationCode("");
+        code5.setDurationTypeStr("MONTH");
+        code5.setDurationDays(30);
+        list.add(code5);
+
+        return list;
     }
 
     /**

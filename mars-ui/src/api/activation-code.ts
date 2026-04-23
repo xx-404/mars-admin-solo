@@ -84,5 +84,17 @@ export const activationCodeApi = {
       method: 'post',
       params: { code, shopId }
     })
+  },
+
+  // 导入激活码
+  importCodes(file: File): Promise<{ successCount: number; failCount: number; errors: string[] }> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request({
+      url: '/biz/activation-code/import',
+      method: 'post',
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
   }
 }

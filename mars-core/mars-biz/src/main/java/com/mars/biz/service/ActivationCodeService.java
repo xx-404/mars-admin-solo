@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mars.biz.dto.req.ActivationCodeQueryReq;
 import com.mars.biz.dto.rsp.ActivationCodeRsp;
 import com.mars.biz.entity.ActivationCode;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 激活码 Service
@@ -80,4 +82,19 @@ public interface ActivationCodeService {
      * @return 激活码信息
      */
     ActivationCodeRsp activate(String code, Long userId, Long shopId);
+
+    /**
+     * 导入激活码
+     *
+     * @param file Excel 文件
+     * @return 导入结果，包含 successCount, failCount, errors
+     */
+    Map<String, Object> importActivationCodes(MultipartFile file);
+
+    /**
+     * 获取测试用的Excel数据列表
+     *
+     * @return 测试数据列表
+     */
+    List<com.mars.biz.excel.ActivationCodeExcel> getTestExcelData();
 }

@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: mars-biz-test
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+activation-code:
+  import:
+    max-file-size-mb: 5
+    max-rows: 1000
+    max-error-messages: 50
+    min-duration-days: 1
+    max-duration-days: 10000
+    max-code-length: 32
+    code-pattern: "^[A-Z0-9]+$"
+    batch-size: 100

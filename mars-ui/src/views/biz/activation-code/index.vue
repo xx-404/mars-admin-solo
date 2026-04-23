@@ -47,6 +47,10 @@
             <template #icon><n-icon><AddOutline /></n-icon></template>
             新增激活码
           </n-button>
+          <n-button @click="importModalVisible = true">
+            <template #icon><n-icon><CloudUploadOutline /></n-icon></template>
+            导入
+          </n-button>
           <n-button type="error" :disabled="selectedIds.length === 0" @click="handleBatchDelete">
             <template #icon><n-icon><TrashOutline /></n-icon></template>
             批量删除
@@ -94,19 +98,63 @@
       v-model:show="showActivationDialog"
       @success="loadData"
     />
+
+    <!-- 导入弹窗 -->
+    <n-modal
+      v-model:show="importModalVisible"
+      title="导入激活码"
+      preset="card"
+      style="width: 500px"
+      :mask-closable="false"
+    >
+      <n-space vertical>
+        <n-alert type="info" :show-icon="true">
+          <template #header>导入说明</template>
+          <ul style="margin: 0; padding-left: 16px; line-height: 1.8">
+            <li>Excel 格式：第一行为表头，包含"激活码"、"类型"、"天数"三列</li>
+            <li>激活码：可选，为空则自动生成16位随机码</li>
+            <li>类型：可选，支持"日/月/季/年"或"DAY/MONTH/QUARTER/YEAR"</li>
+            <li>天数：必填，如 1、30、90、365 等</li>
+            <li>激活状态：导入后默认为"未激活"</li>
+          </ul>
+        </n-alert>
+        <n-upload
+          :max="1"
+          accept=".xlsx,.xls"
+          :show-file-list="true"
+          :custom-request="handleImportUpload"
+        >
+          <n-upload-dragger>
+            <div style="margin-bottom: 12px">
+              <n-icon size="48" :depth="3">
+                <CloudUploadOutline />
+              </n-icon>
+            </div>
+            <n-text style="font-size: 16px">点击或拖拽文件到此处上传</n-text>
+            <n-p depth="3" style="margin: 8px 0 0 0">支持 .xlsx 或 .xls 格式</n-p>
+          </n-upload-dragger>
+        </n-upload>
+      </n-space>
+      <template #footer>
+        <n-space justify="end">
+          <n-button @click="importModalVisible = false">关闭</n-button>
+        </n-space>
+      </template>
+    </n-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, h, computed } from 'vue'
-import { useMessage, useDialog, NTag, NButton, NInput } from 'naive-ui'
+import { useMessage, useDialog, NTag, NButton, NInput, type UploadCustomRequestOptions } from 'naive-ui'
 import {
   SearchOutline,
   RefreshOutline,
   AddOutline,
   TrashOutline,
   CreateOutline,
-  CheckmarkOutline
+  CheckmarkOutline,
+  CloudUploadOutline
 } from '@vicons/ionicons5'
 import { activationCodeApi, type ActivationCode, type ActivationCodeQueryReq } from '@/api/activation-code'
 import ActivationCodeDialog from './components/ActivationCodeDialog.vue'
@@ -235,6 +283,7 @@ const pagination = reactive({
 // 弹窗控制
 const showDialog = ref(false)
 const showActivationDialog = ref(false)
+const importModalVisible = ref(false)
 const editData = ref<ActivationCode | null>(null)
 
 // 加载数据
@@ -344,6 +393,27 @@ function handlePageSizeChange(pageSize: number) {
   pagination.pageSize = pageSize
   pagination.page = 1
   loadData()
+}
+
+// 导入上传
+async function handleImportUpload({ file }: UploadCustomRequestOptions) {
+  if (!file.file) return
+  try {
+    const result = await activationCodeApi.importCodes(file.file)
+    if (result.failCount > 0) {
+      dialog.warning({
+        title: '导入结果',
+        content: `成功: ${result.successCount} 条，失败: ${result.failCount} 条\n错误信息: ${result.errors?.join('\n') || '无'}`,
+        positiveText: '确定'
+      })
+    } else {
+      message.success(`导入成功，共 ${result.successCount} 条数据`)
+      importModalVisible.value = false
+    }
+    loadData()
+  } catch (error) {
+    // 错误已在拦截器处理
+  }
 }
 
 // 初始化加载
